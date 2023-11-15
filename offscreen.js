@@ -25,6 +25,8 @@ let openAIKey="";
 let gptPromptRecap="Please read this transcript and: - generate a brief recap - recap it in bullet points - extract action points. Do not write anything else."
 let language="en";
 
+const server_url="https://parrot-website-server.onrender.com";
+
 let microphoneStream;
 
 function saveConfig() {
@@ -121,15 +123,15 @@ async function startRecording() {
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
-  
     console.log("Form data prepared for transcription request");
   
     // Transcription API request setup
-    const whisperAPIEndpoint = "https://api.openai.com/v1/audio/transcriptions";
+    const whisperAPIEndpoint = server_url+"/api/proxy/whisper";
+   
     fetch(whisperAPIEndpoint, {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + openAIKey
+        'X-API-Key': openAIKey
       },
       body: formData
     })
@@ -190,11 +192,12 @@ async function stopRecording() {
 
 async function askGPTRecap(transcript_title,transcript)
 {
-  fetch('https://api.openai.com/v1/chat/completions', {
+  const gptAPIEndpoint = server_url+"/api/proxy/gpt";
+  fetch(gptAPIEndpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer '+ openAIKey
+      'X-API-Key': openAIKey // API key is now passed in the headers
     },
     body: JSON.stringify({
       "model": "gpt-3.5-turbo-1106",
