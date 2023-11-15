@@ -51,8 +51,6 @@ async function startRecording() {
   data = [];
   const currentDate = new Date().toLocaleString('en-US', { timeZone: 'UTC' });
   const transcript_title="Transcript "+ currentDate;
-  askGPTRecap(transcript_title,"prova prova");
-  return;
   if (recorder?.state === 'recording') {
     throw new Error('Called startRecording while recording is in progress.');
   }
