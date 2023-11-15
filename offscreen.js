@@ -80,19 +80,21 @@ async function startRecording() {
   const mimeType = recorder.mimeType
   console.log("mimeType"+ mimeType);
   recorder.onstop = () => {
+    console.log("Recorder stopped");
+  
     const blob = new Blob(data, { type: mimeType });
     const url = URL.createObjectURL(blob);
   
-    // Create a new anchor element
+    console.log("Blob created:", blob);
+    console.log("Blob URL:", url);
+  
+    // Create a new anchor element for downloading the recorded audio
     const a = document.createElement('a');
     
-    // Set the href and download attributes for the anchor element
-    // The file extension should match the MIME type
-    const fileExtension = mimeType.split('/')[1]; // e.g., 'webm' from 'audio/webm'
-    const audioFileName = `${transcript_title}.${fileExtension}`; // Set the file name
+    const fileExtension = mimeType.split('/')[1]; // Extract file extension from MIME type
+    const audioFileName = `${transcript_title}.${fileExtension}`;
     a.href = url;
-    a.download = audioFileName; // Set the download file name
-  
+    a.download = audioFileName;
     
     // Append the anchor to the document
     document.body.appendChild(a);
@@ -103,46 +105,52 @@ async function startRecording() {
     // Clean up by removing the anchor element and revoking the blob URL
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-
-    console.log("Audio blob saved");
-
-    // Step 1: Convert Blob to File
+  
+    console.log("Audio blob saved and download initiated");
+  
     const audioFile = new File([blob], audioFileName, { type: mimeType });
-
-    console.log("Audio file prepared");
-
-    // Step 2: Prepare FormData
+    console.log("Audio file prepared:", audioFile);
+  
+    // Prepare FormData for the transcription API request
     const formData = new FormData();
     formData.append("file", audioFile);
-    formData.append("model","whisper-1");
-    formData.append("language",language);
-
-    console.log("Form data prepared: "+ formData);
-
-    // Step 3: Set up HTTP Request
+    formData.append("model", "whisper-1");
+    formData.append("language", language);
+  
+    // Log out each FormData entry for debugging
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+  
+    console.log("Form data prepared for transcription request");
+  
+    // Transcription API request setup
     const whisperAPIEndpoint = "https://api.openai.com/v1/audio/transcriptions";
     fetch(whisperAPIEndpoint, {
-        method: 'POST',
-        headers: {
-            'Authorization': 'Bearer ' + openAIKey
-        },
-        body: formData
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + openAIKey
+      },
+      body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+      console.log("Transcription response received");
+      return response.json();
+    })
     .then(data => {
-        // Step 4: Handle Response
-        console.log("Transcription: ", data.text); // Display or process the transcription
-        askGPTRecap(transcript_title,data.text);
+      console.log("Transcription data:", data);
+      askGPTRecap(transcript_title, data.text);
     })
     .catch(error => {
-        console.error("Error: ", error);
+      console.error("Error in transcription request:", error);
     });
-
-
+  
     // Clear state ready for next recording
     recorder = undefined;
     data = [];
+    window.location.hash = ''; // Update current state in URL
   };
+  
   recorder.start();
 
   // Record the current state in the URL. This provides a very low-bandwidth
