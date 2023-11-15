@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Microphone Recording</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #1c1c1c;
+      color: #f1f1f1;
+      text-align: center;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #282828;
+      border-radius: 10px;
+      box-shadow: 0px 0px 10px #000;
+    }
+    label {
+      display: block;
+      margin-top: 20px;
+      color: #ddd;
+    }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #555;
+      background: #333;
+      color: #fff;
+    }
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+    #startButton, #stopButton {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    #stopButton {
+      background-color: #f44336;
+    }
+    #transcriptOutput, #notesOutput {
+      background-color: #333;
+      padding: 15px;
+      border-radius: 5px;
+      min-height: 150px;
+      margin: 20px 0;
+      text-align: left;
+    }
+    @media (max-width: 600px) {
+      .container {
+        width: 95%;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Welcome to the Microphone Recording Tool</h2>
+    <p>Click 'Start Recording' to begin capturing audio. Click 'Stop Recording' to end the session. Your transcript and notes will be displayed below.</p>
+    
+    <label for="openAIKey">OpenAI Key:</label>
+    <input type="text" id="openAIKey" placeholder="Enter OpenAI Key">
+
+    <label for="gptPromptRecap">GPT Prompt Recap:</label>
+    <textarea id="gptPromptRecap">Please read this transcript and: - generate a brief recap - recap it in bullet points - extract action points. Do not write anything else.</textarea>
+
+    <label for="language">Language:</label>
+    <input type="text" id="language" placeholder="Enter Language">
+
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton">Stop Recording</button>
+
+    <h2>Transcript:</h2>
+    <div id="transcriptOutput"></div>
+    
+    <h2>Notes:</h2>
+    <div id="notesOutput"></div>
+  </div>
+
+  <script src="offscreen.js"></script>
+</body>
+</html>
