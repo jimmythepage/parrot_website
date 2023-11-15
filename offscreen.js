@@ -64,19 +64,35 @@ async function startRecording() {
     mixedDest.stream.getTracks()[0]
   ]);
 
+  let options = {};
+
+  if (MediaRecorder.isTypeSupported('audio/webm')) {
+    options.mimeType = 'audio/webm';
+  } else if (MediaRecorder.isTypeSupported('audio/mp4')) {
+    options.mimeType = 'audio/mp4'; // This is commonly supported on iOS.
+  } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+    options.mimeType = 'audio/ogg';
+  }
+
   // Start recording.
-  recorder = new MediaRecorder(combinedStream);
+  recorder = new MediaRecorder(combinedStream,options);
   recorder.ondataavailable = (event) => data.push(event.data);
+  const mimeType = recorder.mimeType
+  console.log("mimeType"+ mimeType);
   recorder.onstop = () => {
-    const blob = new Blob(data, { type: 'audio/webm' });
+    const blob = new Blob(data, { type: mimeType });
     const url = URL.createObjectURL(blob);
   
     // Create a new anchor element
     const a = document.createElement('a');
     
     // Set the href and download attributes for the anchor element
+    // The file extension should match the MIME type
+    const fileExtension = mimeType.split('/')[1]; // e.g., 'webm' from 'audio/webm'
+    const audioFileName = `${transcript_title}.${fileExtension}`; // Set the file name
     a.href = url;
-    a.download = transcript_title+'.webm'; // You can name the file here
+    a.download = audioFileName; // Set the download file name
+  
     
     // Append the anchor to the document
     document.body.appendChild(a);
@@ -91,7 +107,7 @@ async function startRecording() {
     console.log("Audio blob saved");
 
     // Step 1: Convert Blob to File
-    const audioFile = new File([blob], "audio.webm", { type: 'audio/webm' });
+    const audioFile = new File([blob], audioFileName, { type: mimeType });
 
     console.log("Audio file prepared");
 
