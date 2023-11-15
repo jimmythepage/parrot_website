@@ -117,7 +117,7 @@ async function startRecording() {
     formData.append("model","whisper-1");
     formData.append("language",language);
 
-    console.log("Form data prepared");
+    console.log("Form data prepared: "+ formData);
 
     // Step 3: Set up HTTP Request
     const whisperAPIEndpoint = "https://api.openai.com/v1/audio/transcriptions";
