@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', (event) => {
   const startButton = document.getElementById('startButton');
   const stopButton = document.getElementById('stopButton');
+  stopButton.disabled = true;
   document.getElementById('openAIKey').value = localStorage.getItem('openAIKey') || '';
   document.getElementById('gptPromptRecap').value = localStorage.getItem('gptPromptRecap') || '';
   document.getElementById('language').value = localStorage.getItem('language') || '';
@@ -36,6 +37,11 @@ function saveConfig() {
 
 
 async function startRecording() {
+  startButton.textContent = 'Recording...'; // Update button text
+  startButton.style.backgroundColor = '#ff0000'; // Change to red color
+  startButton.disabled = true; // Disable the button to prevent multiple clicks
+  stopButton.disabled = false; // Enable the stop button
+
   saveConfig();
   // Clear previous data
   data = [];
@@ -131,6 +137,10 @@ async function startRecording() {
 }
 
 async function stopRecording() {
+  startButton.textContent = 'Start Recording'; // Reset button text
+  startButton.style.backgroundColor = '#4CAF50'; // Change back to green color
+  startButton.disabled = false; // Enable the start button again
+  stopButton.disabled = true; // Disable the stop button until recording is started again
   recorder.stop();
 
   // Stopping the tracks makes sure the recording icon in the tab is removed.
