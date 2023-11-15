@@ -136,6 +136,12 @@ async function stopRecording() {
   // Stopping the tracks makes sure the recording icon in the tab is removed.
   recorder.stream.getTracks().forEach((t) => t.stop());
 
+  // Stop all tracks on the original media stream
+  if (microphoneStream) {
+    microphoneStream.getTracks().forEach(track => track.stop());
+  }
+
+
   // Update current state in URL
   window.location.hash = '';
 
