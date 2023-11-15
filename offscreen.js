@@ -63,7 +63,7 @@ async function startRecording() {
   ]);
 
   // Start recording.
-  recorder = new MediaRecorder(combinedStream, { mimeType: 'audio/webm' });
+  recorder = new MediaRecorder(combinedStream);
   recorder.ondataavailable = (event) => data.push(event.data);
   recorder.onstop = () => {
     const blob = new Blob(data, { type: 'audio/webm' });
