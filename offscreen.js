@@ -25,6 +25,8 @@ let openAIKey="";
 let gptPromptRecap="Please read this transcript and: - generate a brief recap - recap it in bullet points - extract action points. Do not write anything else."
 let language="en";
 
+let microphoneStream;
+
 function saveConfig() {
   localStorage.setItem('openAIKey', document.getElementById('openAIKey').value);
   localStorage.setItem('gptPromptRecap', document.getElementById('gptPromptRecap').value);
@@ -51,12 +53,12 @@ async function startRecording() {
     throw new Error('Called startRecording while recording is in progress.');
   }
 
-  const microphone = await navigator.mediaDevices.getUserMedia({audio: true});
+  microphoneStream = await navigator.mediaDevices.getUserMedia({audio: true});
 
   const mixedContext = new AudioContext();
   const mixedDest = mixedContext.createMediaStreamDestination();
 
-  mixedContext.createMediaStreamSource(microphone).connect(mixedDest);
+  mixedContext.createMediaStreamSource(microphoneStream).connect(mixedDest);
 
   const combinedStream = new MediaStream([
     mixedDest.stream.getTracks()[0]
